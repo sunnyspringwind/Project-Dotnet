@@ -30,5 +30,8 @@ namespace wandermate_backend.Models
         public HotelDetails? HotelDetails {get; set;}        //links 1 to 1 relation
 
         public List<HotelReview> HotelReviews {get; set;} = new List<HotelReview>();      //links 1 to many relation
+
+        public List<HotelBooking> Bookings { get; set; } = new List<HotelBooking>();
+
     }
 }

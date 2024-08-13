@@ -18,6 +18,8 @@ namespace wandermate_backend.Models
         public string Email { get; set; } = string.Empty;
 
         public string Password { get; set; } = string.Empty;
-        
+
+        public List<HotelBooking> Bookings { get; set; } = new List<HotelBooking>(); //one user may have multiple bookings
+
     }
 }
