@@ -87,6 +87,7 @@ namespace wandermate_backend.Controllers    //handles client interactions wherea
             await _context.SaveChangesAsync();
             var hotelResponse = new HotelResponseDto
             {
+                Id = hotel.Id,
                 Name = hotelDto.Name,
                 Price = hotelDto.Price,
                 Description = hotelDto.Description,

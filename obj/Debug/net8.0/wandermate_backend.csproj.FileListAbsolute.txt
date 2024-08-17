@@ -121,3 +121,6 @@ C:\Users\HP\Desktop\Enrichment\backend\wandermate_backend\bin\Debug\net8.0\Micro
 C:\Users\HP\Desktop\Enrichment\backend\wandermate_backend\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\HP\Desktop\Enrichment\backend\wandermate_backend\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\HP\Desktop\Enrichment\backend\wandermate_backend\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\HP\Desktop\Enrichment\backend\wandermate_backend\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+C:\Users\HP\Desktop\Enrichment\backend\wandermate_backend\bin\Debug\net8.0\MailKit.dll
+C:\Users\HP\Desktop\Enrichment\backend\wandermate_backend\bin\Debug\net8.0\MimeKit.dll

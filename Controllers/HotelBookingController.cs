@@ -1,183 +1,187 @@
-// using System;
-// using System.Collections.Generic;
-// using System.Linq;
-// using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-// using System;
-// using System.Collections.Generic;
-// using System.Linq;
-// using System.Threading.Tasks;
-// using Microsoft.AspNetCore.Authorization;
-// using Microsoft.AspNetCore.Mvc;
-// using Microsoft.EntityFrameworkCore;
-// using wandermate_backend.Data;
-// using wandermate_backend.DTOs.HotelBookingDtos;
-// using wandermate_backend.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using wandermate_backend.Data;
+using wandermate_backend.DTOs.HotelBookingDtos;
+using wandermate_backend.Models;
+using Microsoft.AspNetCore.Identity;
 
-// namespace wandermate_backend.Controllers
-// {
-//     [Route("wandermake_backend/bookings")]
-//     [ApiController]
-//     public class HotelBookingController : ControllerBase
-//     {
-//         private readonly ApplicationDbContext _context;
+namespace wandermate_backend.Controllers
+{
+    [Route("wandermake_backend/bookings")]
+    [ApiController]
+    public class HotelBookingController : ControllerBase
+    {
+        private readonly ApplicationDbContext _context;
 
-//         public HotelBookingController(ApplicationDbContext context)
-//         {
-//             _context = context;
-//         }
+        private readonly UserManager<AppUser> _userManager;
 
-//         [HttpGet]
-//         public async Task<IActionResult> GetAll()
-//         {
-//             var bookings = await _context.HotelBookings
-//                 .Include(hb => hb.Hotel)
-//                 .Include(hb => hb.User)
-//                 .ToListAsync();
+        public HotelBookingController(ApplicationDbContext context, UserManager<AppUser> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
 
-//             var bookingDTOs = bookings.Select(booking => new HotelBookingDto
-//             {
-//                 Id = booking.Id,
-//                 HotelName = booking.Hotel.Name,
-//                 UserName = booking.User.Username,
-//                 BookingDate = booking.BookingDate,
-//                 Duration = booking.Duration,
-//                 Checkin = booking.Checkin,
-//                 Checkout = booking.Checkout,
-//                 TotalPrice = booking.TotalPrice
-//             }).ToList();
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var bookings = await _context.HotelBookings
+                .Include(hb => hb.Hotel)
+                .Include(hb => hb.User)
+                .ToListAsync();
 
-//             return Ok(bookingDTOs);
-//         }
+            var bookingDTOs = bookings.Select(booking => new HotelBookingDto
+            {
+                Id = booking.Id,
+                HotelName = booking.Hotel.Name,
+                UserName = booking.User.UserName,
+                BookingDate = booking.BookingDate,
+                Duration = booking.Duration,
+                Checkin = booking.Checkin,
+                Checkout = booking.Checkout,
+                TotalPrice = booking.TotalPrice
+            }).ToList();
 
-//         [HttpGet("{id}")]
-//         public async Task<IActionResult> GetById([FromRoute] int id)
-//         {
-//             var booking = await _context.HotelBookings
-//                 .Where(hb => hb.Id == id)
-//                 .Include(hb => hb.Hotel)
-//                 .Include(hb => hb.User)
-//                 .Select(hb => new HotelBookingDto
-//                 {
-//                     Id = hb.Id,
-//                     HotelName = hb.Hotel.Name,
-//                     UserName = hb.User.Username,
-//                     BookingDate = hb.BookingDate,
-//                     Duration = hb.Duration,
-//                     Checkin = hb.Checkin,
-//                     Checkout = hb.Checkout,
-//                     TotalPrice = hb.TotalPrice
-//                 })
-//                 .FirstOrDefaultAsync();
+            return Ok(bookingDTOs);
+        }
 
-//             if (booking == null)
-//             {
-//                 return NotFound();
-//             }
+        // [HttpGet("{id}")]
+        // public async Task<IActionResult> GetById([FromRoute] int id)
+        // {
+        //     var booking = await _context.HotelBookings
+        //         .Where(hb => hb.Id == id)
+        //         .Include(hb => hb.Hotel)
+        //         .Include(hb => hb.User)
+        //         .Select(hb => new HotelBookingDto
+        //         {
+        //             Id = hb.Id,
+        //             HotelName = hb.Hotel.Name,
+        //             UserName = hb.User.UserName,
+        //             BookingDate = hb.BookingDate,
+        //             Duration = hb.Duration,
+        //             Checkin = hb.Checkin,
+        //             Checkout = hb.Checkout,
+        //             TotalPrice = hb.TotalPrice
+        //         })
+        //         .FirstOrDefaultAsync();
 
-//             return Ok(booking);
-//         }
+        //     if (booking == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-//         [HttpPost]
-//         public async Task<IActionResult> CreateBooking([FromBody] CreateNewHotelBookingDto bookingDto)
-//         {
-//             if (!ModelState.IsValid)
-//             {
-//                 return BadRequest(ModelState);
-//             }
+        //     return Ok(booking);
+        // }
 
-//             var hotel = await _context.Hotels.FindAsync(bookingDto.HotelId);
-//             var user = await _context.Users.FindAsync(bookingDto.UserId);
+        // // [HttpPost]
+        // // public async Task<IActionResult> CreateBooking([FromBody] CreateNewHotelBookingDto bookingDto)
+        // // {
+        // //     if (!ModelState.IsValid)
+        // //     {
+        // //         return BadRequest(ModelState);
+        // //     }
 
-//             if (hotel == null || user == null)
-//             {
-//                 return BadRequest("Invalid HotelId or UserId.");
-//             }
+        // //     var hotel = await _context.Hotels.FindAsync(bookingDto.HotelId);
+        // //     var user = await _userManager.Users.FirstAsync();
 
-//             var booking = new HotelBooking
-//             {
-//                 HotelId = bookingDto.HotelId,
-//                 UserId = bookingDto.UserId,
-//                 BookingDate = bookingDto.BookingDate,
-//                 Duration = bookingDto.Duration,
-//                 Checkin = bookingDto.Checkin,
-//                 Checkout = bookingDto.Checkout,
-//                 TotalPrice = bookingDto.TotalPrice
-//             };
+        // //     if (hotel == null || user == null)
+        // //     {
+        // //         return BadRequest("Invalid HotelId or UserId.");
+        // //     }
 
-//             try
-//             {
-//                 await _context.HotelBookings.AddAsync(booking);
-//                 await _context.SaveChangesAsync();
-//                 return CreatedAtAction(nameof(GetById), new { id = booking.Id }, booking);
-//             }
-//             catch (Exception ex)
-//             {
-//                 return StatusCode(500, ex.Message);
-//             }
-//         }
+        // //     var booking = new HotelBooking
+        // //     {
+        // //         HotelId = bookingDto.HotelId,
+               
+        // //         BookingDate = bookingDto.BookingDate,
+        // //         Duration = bookingDto.Duration,
+        // //         Checkin = bookingDto.Checkin,
+        // //         Checkout = bookingDto.Checkout,
+        // //         TotalPrice = bookingDto.TotalPrice
+        // //     };
 
-//         [HttpPut("{id}")]
-//         public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateHotelBookingDto bookingDto)
-//         {
-//             var bookingInDatabase = await _context.HotelBookings.FindAsync(id);
-//             if (bookingInDatabase == null)
-//             {
-//                 return NotFound();
-//             }
+        // //     try
+        // //     {
+        // //         await _context.HotelBookings.AddAsync(booking);
+        // //         await _context.SaveChangesAsync();
+        // //         return CreatedAtAction(nameof(GetById), new { id = booking.Id }, booking);
+        // //     }
+        // //     catch (Exception ex)
+        // //     {
+        // //         return StatusCode(500, ex.Message);
+        // //     }
+        // // }
 
-//             bookingInDatabase.BookingDate = bookingDto.BookingDate;
-//             bookingInDatabase.Duration = bookingDto.Duration;
-//             bookingInDatabase.Checkin = bookingDto.Checkin;
-//             bookingInDatabase.Checkout = bookingDto.Checkout;
-//             bookingInDatabase.TotalPrice = bookingDto.TotalPrice;
+        // // [HttpPut("{id}")]
+        // // public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateHotelBookingDto bookingDto)
+        // // {
+        // //     var bookingInDatabase = await _context.HotelBookings.FindAsync(id);
+        // //     if (bookingInDatabase == null)
+        // //     {
+        // //         return NotFound();
+        // //     }
 
-//             _context.Entry(bookingInDatabase).State = EntityState.Modified;
+        // //     bookingInDatabase.BookingDate = bookingDto.BookingDate;
+        // //     bookingInDatabase.Duration = bookingDto.Duration;
+        // //     bookingInDatabase.Checkin = bookingDto.Checkin;
+        // //     bookingInDatabase.Checkout = bookingDto.Checkout;
+        // //     bookingInDatabase.TotalPrice = bookingDto.TotalPrice;
 
-//             try
-//             {
-//                 await _context.SaveChangesAsync();
-//             }
-//             catch (DbUpdateConcurrencyException)
-//             {
-//                 if (!_context.HotelBookings.Any(hb => hb.Id == id))
-//                 {
-//                     return NotFound();
-//                 }
-//                 else
-//                 {
-//                     throw;
-//                 }
-//             }
-//             catch (Exception ex)
-//             {
-//                 return StatusCode(500, ex.Message);
-//             }
+        // //     _context.Entry(bookingInDatabase).State = EntityState.Modified;
 
-//             return NoContent();
-//         }
+        // //     try 
+        // //     {
+        // //         await _context.SaveChangesAsync();
+        // //     }
+        // //     catch (DbUpdateConcurrencyException)
+        // //     {
+        // //         if (!_context.HotelBookings.Any(hb => hb.Id == id))
+        // //         {
+        // //             return NotFound();
+        // //         }
+        // //         else
+        // //         {
+        // //             throw;
+        // //         }
+        // //     }
+        // //     catch (Exception ex)
+        // //     {
+        // //         return StatusCode(500, ex.Message);
+        // //     }
 
-//         [HttpDelete("{id}")]
-//         public async Task<IActionResult> DeleteBooking([FromRoute] int id)
-//         {
-//             var bookingToDelete = await _context.HotelBookings.FindAsync(id);
+        // //     return NoContent();
+        // // }
 
-//             if (bookingToDelete == null)
-//             {
-//                 return NotFound();
-//             }
+        // // [HttpDelete("{id}")]
+        // // public async Task<IActionResult> DeleteBooking([FromRoute] int id)
+        // // {
+        // //     var bookingToDelete = await _context.HotelBookings.FindAsync(id);
 
-//             try
-//             {
-//                 _context.HotelBookings.Remove(bookingToDelete);
-//                 await _context.SaveChangesAsync();
-//             }
-//             catch (Exception ex)
-//             {
-//                 return StatusCode(500, ex.Message);
-//             }
+        // //     if (bookingToDelete == null)
+        // //     {
+        // //         return NotFound();
+        // //     }
 
-//             return NoContent();
-//         }
-//     }
-// }
+        // //     try
+        // //     {
+        // //         _context.HotelBookings.Remove(bookingToDelete);
+        // //         await _context.SaveChangesAsync();
+        // //     }
+        // //     catch (Exception ex)
+        // //     {
+        // //         return StatusCode(500, ex.Message);
+        // //     }
+
+        // //     return NoContent();
+        // // }
+    }
+}

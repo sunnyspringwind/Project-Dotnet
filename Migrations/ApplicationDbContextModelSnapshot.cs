@@ -51,13 +51,13 @@ namespace wandermate_backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d3fdbc14-a349-4c9e-91f6-e544b05cbbc7",
+                            Id = "93ff6deb-62bb-45d6-afeb-0a70abb42b67",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "b8bcac54-c85e-434f-a322-320420bb2b23",
+                            Id = "18c79425-4fe8-47a8-90f6-72073aa73560",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -296,8 +296,9 @@ namespace wandermate_backend.Migrations
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -305,7 +306,7 @@ namespace wandermate_backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("HotelBooking");
+                    b.ToTable("HotelBookings");
                 });
 
             modelBuilder.Entity("wandermate_backend.Models.HotelDetails", b =>
@@ -418,31 +419,6 @@ namespace wandermate_backend.Migrations
                     b.ToTable("TravelPackageReviews");
                 });
 
-            modelBuilder.Entity("wandermate_backend.Models.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("User");
-                });
-
             modelBuilder.Entity("wandermate_backend.models.TravelPackage", b =>
                 {
                     b.Property<int>("Id")
@@ -531,8 +507,8 @@ namespace wandermate_backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("wandermate_backend.Models.User", "User")
-                        .WithMany("Bookings")
+                    b.HasOne("wandermate_backend.Models.AppUser", "User")
+                        .WithMany("HotelBookings")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -582,6 +558,11 @@ namespace wandermate_backend.Migrations
                     b.Navigation("TravelPackage");
                 });
 
+            modelBuilder.Entity("wandermate_backend.Models.AppUser", b =>
+                {
+                    b.Navigation("HotelBookings");
+                });
+
             modelBuilder.Entity("wandermate_backend.Models.Hotel", b =>
                 {
                     b.Navigation("Bookings");
@@ -589,11 +570,6 @@ namespace wandermate_backend.Migrations
                     b.Navigation("HotelDetails");
 
                     b.Navigation("HotelReviews");
-                });
-
-            modelBuilder.Entity("wandermate_backend.Models.User", b =>
-                {
-                    b.Navigation("Bookings");
                 });
 
             modelBuilder.Entity("wandermate_backend.models.TravelPackage", b =>

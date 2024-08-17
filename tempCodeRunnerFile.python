@@ -1,0 +1,18 @@
+import itertools
+
+def brute_force(target, characters, length):
+    for password in itertools.product(characters, repeat=length):
+        password = ''.join(password)
+        if password == target:
+            return password
+    return None
+
+target_password = "password123"
+character_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+password_length = 8
+
+result = brute_force(target_password, character_set, password_length)
+if result:
+    print("Password found:", result)
+else:
+    print("Password not found.")

@@ -10,8 +10,8 @@ using wandermate_backend.Models;
 
 namespace wandermate_backend.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<AppUser>  //dbcontext plus the identity framework to manage users as well.
-  {
+    public class ApplicationDbContext : IdentityDbContext<AppUser>  //dbcontext plus the identity framework for identity framework classes.
+    {
         public ApplicationDbContext(DbContextOptions dbContextOptions)
         : base(dbContextOptions)
         {
@@ -28,7 +28,7 @@ namespace wandermate_backend.Data
 
         // public DbSet<User> Users { get; set; }
 
-        // public DbSet<HotelBooking> HotelBookings { get; set; }
+        public DbSet<HotelBooking> HotelBookings { get; set; }
 
 
 
@@ -37,24 +37,22 @@ namespace wandermate_backend.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            
+
             // Configure many-to-many 
-            // modelBuilder.Entity<HotelBooking>()
-            //     .HasOne(hb => hb.Hotel)
-            //     .WithMany(h => h.Bookings)
-            //     .HasForeignKey(hb => hb.HotelId)
-            //     .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<HotelBooking>()
+                .HasOne(hb => hb.Hotel)
+                .WithMany(h => h.Bookings)
+                .HasForeignKey(hb => hb.HotelId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // modelBuilder.Entity<HotelBooking>()
-            //     .HasOne(hb => hb.User)
-            //     .WithMany(u => u.Bookings)
-            //     .HasForeignKey(hb => hb.UserId)
-            //     .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<HotelBooking>()
+                .HasOne(hb => hb.User)
+                .WithMany(u => u.HotelBookings)
+                .HasForeignKey(hb => hb.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // modelBuilder.Entity<User>()
-            //    .HasIndex(u => u.Email)
-            //    .IsUnique();
-         
+    
+
             List<IdentityRole> roles = new List<IdentityRole>{
                 new IdentityRole{
                     Name ="Admin",
@@ -68,6 +66,6 @@ namespace wandermate_backend.Data
             builder.Entity<IdentityRole>().HasData(roles);
 
         }
-}
+    }
 
 }

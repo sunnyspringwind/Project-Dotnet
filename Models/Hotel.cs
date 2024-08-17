@@ -11,6 +11,8 @@ namespace wandermate_backend.Models
     public class Hotel
     {
     [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        
         public int Id {get; set;}
 
         public required string Name {get; set;}

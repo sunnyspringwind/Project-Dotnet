@@ -8,6 +8,6 @@ namespace wandermate_backend.Models
 {
         public class AppUser : IdentityUser
         {
-
+            public List<HotelBooking> HotelBookings {get; set;}= new List<HotelBooking>();
         }
     }
